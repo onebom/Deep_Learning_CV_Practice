@@ -7,6 +7,15 @@ from custumlayer import *
 from generator import Generator
 from discriminator import Discriminator
 
+def Mapping(num_stages, input_shape=512):
+    z = layers.Input(shape=(input_shape))
+    w = pixel_norm(z)
+    for i in range(8):
+        w = EqualizedDense(512, learning_rate_multiplier=0.01)(w)
+        w = layers.LeakyReLU(0.2)(w)
+    w = tf.tile(tf.expand_dims(w, 1), (1, num_stages, 1))
+    return keras.Model(z, w, name="mapping")
+
 class StyleGAN(tf.keras.Model):
     def __init__(self, z_dim=512, target_res=64, start_res=4):
         super().__init__()

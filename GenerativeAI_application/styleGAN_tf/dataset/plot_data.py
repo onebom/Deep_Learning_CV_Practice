@@ -1,5 +1,12 @@
 import matplotlib.pyplot as plt
 
+def read_image(src):
+    img = cv2.imread(src)
+    if img is None:
+        raise FileNotFoundError
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    return img
+
 def plot_images(images, log2_res, fname=""):
     scales = {2: 0.5, 3: 1, 4: 2, 5: 3, 6: 4, 7: 5, 8: 6, 9: 7, 10: 8}
     scale = scales[log2_res]

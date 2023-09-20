@@ -8,6 +8,8 @@ from generator import Generator
 from discriminator import Discriminator
 
 def Mapping(num_stages, input_shape=512):
+    """mapping to map the random noise into style code
+    """
     z = layers.Input(shape=(input_shape))
     w = pixel_norm(z)
     for i in range(8):
@@ -26,9 +28,10 @@ class StyleGAN(tf.keras.Model):
         self.current_res_log2 = self.target_res_log2
         self.num_stages = self.target_res_log2 - self.start_res_log2 + 1
 
+        #alpha: 
         self.alpha = tf.Variable(1.0, dtype=tf.float32, trainable=False, name="alpha")
 
-        self.mapping = Mapping(num_stages=self.num_stages)
+        self.mapping = Mapping(num_stages=self.num_stages) # random noise to style 
         self.d_builder = Discriminator(self.start_res_log2, self.target_res_log2)
         self.g_builder = Generator(self.start_res_log2, self.target_res_log2)
         self.g_input_shape = self.g_builder.input_shape

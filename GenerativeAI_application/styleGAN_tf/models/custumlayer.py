@@ -4,6 +4,11 @@ import numpy as np
 from tensorflow.keras import layers
 
 class EqualizedConv(layers.Layer):
+    """
+    https://arxiv.org/abs/2005.03101
+    https://herbwood.tistory.com/18
+    https://github.com/akanimax/pro_gan_pytorch/issues/17
+    """
     def __init__(self, out_channels, kernel=3, gain=2, **kwargs):
         super().__init__(**kwargs)
         self.kernel = kernel
@@ -37,6 +42,8 @@ class EqualizedConv(layers.Layer):
         return output
 
 class EqualizedDense(layers.Layer):
+    """https://arxiv.org/abs/2201.02593
+    """
     def __init__(self, units, gain=2, learning_rate_multiplier=1, **kwargs):
         super().__init__(**kwargs)
         self.units = units
@@ -98,15 +105,6 @@ class AdaIN(layers.Layer):
         yb = tf.reshape(self.dense_2(w), (-1, 1, 1, self.x_channels))
         return ys * x + yb
 
-def Mapping(num_stages, input_shape=512):
-    z = layers.Input(shape=(input_shape))
-    w = pixel_norm(z)
-    for i in range(8):
-        w = EqualizedDense(512, learning_rate_multiplier=0.01)(w)
-        w = layers.LeakyReLU(0.2)(w)
-    w = tf.tile(tf.expand_dims(w, 1), (1, num_stages, 1))
-    return keras.Model(z, w, name="mapping")
-
 def log2(x):
     return int(np.log2(x))
 
@@ -114,6 +112,9 @@ def fade_in(alpha, a, b):
     return alpha * a + (1.0 - alpha) * b
 
 def wasserstein_loss(y_true, y_pred):
+    # WGAN loss : https://machinelearningmastery.com/how-to-implement-wasserstein-loss-for-generative-adversarial-networks/, 
+    # https://ahjeong.tistory.com/7
+    # tf.reduce_mean: reduces all dimensions. 모든 차원 제거후, 하나의 스칼라값 출력
     return -tf.reduce_mean(y_true * y_pred)
 
 def pixel_norm(x, epsilon=1e-8):

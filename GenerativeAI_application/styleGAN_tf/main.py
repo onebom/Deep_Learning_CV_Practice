@@ -1,7 +1,11 @@
 from utils.config import parse_args
 
+from dataset.data_loader import get_data_loader
+from models.stylegan import StyleGAN
+
 def main(args):
     model = None
+    model = StyleGAN(args)
 
     train_loader, test_loader = get_data_loader(args)
 

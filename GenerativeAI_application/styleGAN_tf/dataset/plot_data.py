@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import cv2
 
 def read_image(src):
     img = cv2.imread(src)

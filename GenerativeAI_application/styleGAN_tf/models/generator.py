@@ -30,8 +30,8 @@ class Generator:
             7: 128,  # 128x128
             8: 64,  # 256x256
             9: 32,  # 512x512
-            10: 16,
-        }  # 1024x1024
+            10: 16, # 1024x1024
+        }  
 
         start_res = 2 ** start_res_log2
         self.input_shape = (start_res, start_res, self.filter_nums[start_res_log2])
